@@ -132,7 +132,7 @@ At [Mernchat](https://mernchat.in), i am committed to transparency and security.
 - **🔄 Socket.IO** – Real-time bidirectional communication.  
 - **🗄️ Prisma ORM** – Type-safe database management.  
 - **🔐 JWT Authentication (jsonwebtoken)** – Secure authentication.  
-- **☁️ Cloudinary** – Cloud storage for images & files.  
+- **☁️ Uploadcare** – Cloud storage for images & files.  
 - **📧 Nodemailer** – Email notifications & MFA verification.  
 - **🔑 Passport.js + Google OAuth** – OAuth-based authentication.  
 - **🔥 Firebase Admin SDK** – Push notifications.  
@@ -160,7 +160,7 @@ cd nextjs-chat-app
 1. Navigate to the **backend** folder.  
 2. Rename `.env.development.example` to `.env.development`.  
 3. Rename `.env.production.example` to `.env.production`.  
-4. Replace the placeholder values with actual credentials.  
+4. Replace the placeholder values with actual credentials (including `UPLOADCARE_PUBLIC_KEY` and `UPLOADCARE_SECRET_KEY`).  
 5. Create a `firebase-admin-cred.json` file inside `backend/src/` (root level of `src`). This file should contain your Firebase service account credentials required for Firebase push notifications.
 6. 📝 **Example `backend/src/firebase-admin-cred.json` file**, Paste your own cred here provided by firebase  
 ```json

@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     domains: [
       "images.pexels.com",
-      "res.cloudinary.com",
+      "ucarecdn.com",
       "lh3.googleusercontent.com", 
       "media.tenor.com"
     ],

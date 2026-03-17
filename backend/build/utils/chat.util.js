@@ -15,7 +15,7 @@ import { userSocketIds } from "../index.js";
 //           isExistingChat.deleteOne(),
 //           Message.deleteMany({chat:isExistingChat._id}),
 //           UnreadMessage.deleteMany({chat:isExistingChat._id}),
-//           deleteFilesFromCloudinary({publicIds:publicIdsToBeDestroyed})
+//           deleteFilesFromUploadcare({fileIds:publicIdsToBeDestroyed})
 //         ]
 //         await Promise.all(chatDeletePromise)
 // }

@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma.lib.js";
-import { deleteFilesFromCloudinary, uploadFilesToCloudinary } from "../utils/auth.util.js";
+import { deleteFilesFromUploadcare, uploadFilesToUploadcare } from "../utils/auth.util.js";
 import { sendMail } from "../utils/email.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
 export const udpateUser = asyncErrorHandler(async (req, res, next) => {
@@ -7,19 +7,19 @@ export const udpateUser = asyncErrorHandler(async (req, res, next) => {
         return next(new CustomError("Please provide an image", 400));
     }
     let uploadResults;
-    const existingAvatarPublicId = req.user.avatarCloudinaryPublicId;
-    if (!existingAvatarPublicId) {
-        uploadResults = await uploadFilesToCloudinary({ files: [req.file] });
+    const existingAvatarFileId = req.user.avatarUploadcareFileId;
+    if (!existingAvatarFileId) {
+        uploadResults = await uploadFilesToUploadcare({ files: [req.file] });
         if (!uploadResults) {
             return next(new CustomError("Some error occured", 500));
         }
     }
     else {
-        const cloudinaryFilePromises = [
-            deleteFilesFromCloudinary({ publicIds: [existingAvatarPublicId] }),
-            uploadFilesToCloudinary({ files: [req.file] })
+        const uploadcareFilePromises = [
+            deleteFilesFromUploadcare({ fileIds: [existingAvatarFileId] }),
+            uploadFilesToUploadcare({ files: [req.file] })
         ];
-        const [_, result] = await Promise.all(cloudinaryFilePromises);
+        const [_, result] = await Promise.all(uploadcareFilePromises);
         if (!result)
             return next(new CustomError("Some error occured", 500));
         uploadResults = result;
@@ -29,8 +29,8 @@ export const udpateUser = asyncErrorHandler(async (req, res, next) => {
             id: req.user.id
         },
         data: {
-            avatar: uploadResults[0].secure_url,
-            avatarCloudinaryPublicId: uploadResults[0].public_id
+            avatar: uploadResults[0].cdnUrl,
+            avatarUploadcareFileId: uploadResults[0].uuid
         }
     });
     const secureUserInfo = {

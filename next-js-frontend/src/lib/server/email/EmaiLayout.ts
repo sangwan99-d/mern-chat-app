@@ -105,7 +105,7 @@ export const emailLayout = ({ content, emailType }: Params) => {
     <body>
     <div class="container">
         <div class="header">
-            <img src="https://res.cloudinary.com/dh5fjdce9/image/upload/v1718195665/logo256_nhwcrt.png" alt="MernChat Official Logo" />
+            <img src="https://ucarecdn.com/a6f395bf-29ae-4a55-85ee-57e7423d1d14/logo256.png" alt="MernChat Official Logo" />
             <h1>${headerTitle}</h1>
         </div>
         <div class="content">

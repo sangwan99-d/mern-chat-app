@@ -1,4 +1,4 @@
-const DEFAULT_AVATAR = "https://res.cloudinary.com/dh5fjdce9/image/upload/v1717842288/defaultAvatar_q2y2az.png"
+const DEFAULT_AVATAR = "https://ucarecdn.com/a6f395bf-29ae-4a55-85ee-57e7423d1d14/defaultAvatar.png"
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"]
 const ACCEPTED_FILE_MIME_TYPES = ["application/pdf","application/msword",...ACCEPTED_IMAGE_TYPES]
 
