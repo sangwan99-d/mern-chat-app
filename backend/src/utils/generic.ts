@@ -20,7 +20,7 @@ export const sendPushNotification = ({fcmToken,body,title}:{fcmToken:string,body
             notification: {
               title:title?title:`${notificationTitles[getRandomIndex(notificationTitles.length)]}`,
               body,
-              imageUrl:"https://res.cloudinary.com/djr9vabwz/image/upload/v1739560136/logo192_lqsucz.png"
+              imageUrl:"https://ucarecdn.com/a6f395bf-29ae-4a55-85ee-57e7423d1d14/logo192.png"
             },
             webpush: link && {
               fcmOptions: {

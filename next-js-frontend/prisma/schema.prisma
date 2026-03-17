@@ -36,8 +36,8 @@ model Chat {
   id                       String   @id @default(cuid())
   name                     String?
   isGroupChat              Boolean  @default(false)
-  avatar                   String   @default("https://res.cloudinary.com/dh5fjdce9/image/upload/v1717842288/defaultAvatar_q2y2az.png")
-  avatarCloudinaryPublicId String?
+  avatar                   String   @default("https://ucarecdn.com/a6f395bf-29ae-4a55-85ee-57e7423d1d14/defaultAvatar.png")
+  avatarUploadcareFileId   String?
   admin                    User?    @relation(fields: [adminId], references: [id])
   adminId                  String?
   latestMessage            Message? @relation("latestMessage", fields: [latestMessageId], references: [id])
@@ -66,7 +66,7 @@ model Friends {
 model Attachment {
   id                 String  @id @default(cuid())
   secureUrl          String
-  cloudinaryPublicId String
+  uploadcareFileId   String
   message            Message @relation(fields: [messageId], references: [id])
   messageId          String
 }
@@ -224,8 +224,8 @@ model User {
   id                       String    @id @default(cuid())
   name                     String
   username                 String    @unique
-  avatar                   String    @default("https://res.cloudinary.com/dh5fjdce9/image/upload/v1717842288/defaultAvatar_q2y2az.png")
-  avatarCloudinaryPublicId String?
+  avatar                   String    @default("https://ucarecdn.com/a6f395bf-29ae-4a55-85ee-57e7423d1d14/defaultAvatar.png")
+  avatarUploadcareFileId   String?
   email                    String    @unique
   isOnline                 Boolean   @default(false)
   fcmToken                 String?

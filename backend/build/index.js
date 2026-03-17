@@ -5,7 +5,7 @@ import { createServer } from 'http';
 import morgan from 'morgan';
 import passport from 'passport';
 import { Server } from 'socket.io';
-import './config/cloudinary.config.js';
+import './config/uploadcare.config.js';
 import { config } from './config/env.config.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
 import './passport/google.strategy.js';

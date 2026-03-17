@@ -1,7 +1,7 @@
 import { DEFAULT_AVATAR } from "../constants/file.constant.js";
 import { Events } from "../enums/event/event.enum.js";
 import { prisma } from "../lib/prisma.lib.js";
-import { deleteFilesFromCloudinary, uploadFilesToCloudinary } from "../utils/auth.util.js";
+import { deleteFilesFromUploadcare, uploadFilesToUploadcare } from "../utils/auth.util.js";
 import { disconnectMembersFromChatRoom, joinMembersInChatRoom } from "../utils/chat.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
 import { emitEvent, emitEventToRoom } from "../utils/socket.util.js";
@@ -19,14 +19,14 @@ const createChat = asyncErrorHandler(async (req, res, next) => {
         let hasAvatar = false;
         if (req.file) {
             hasAvatar = true;
-            uploadResults = await uploadFilesToCloudinary({ files: [req.file] });
+            uploadResults = await uploadFilesToUploadcare({ files: [req.file] });
         }
-        const avatar = (hasAvatar && uploadResults && uploadResults[0]) ? uploadResults[0].secure_url : DEFAULT_AVATAR;
-        const avatarCloudinaryPublicId = (hasAvatar && uploadResults && uploadResults[0]) ? uploadResults[0].public_id : null;
+        const avatar = (hasAvatar && uploadResults && uploadResults[0]) ? uploadResults[0].cdnUrl : DEFAULT_AVATAR;
+        const avatarUploadcareFileId = (hasAvatar && uploadResults && uploadResults[0]) ? uploadResults[0].uuid : null;
         const newChat = await prisma.chat.create({
             data: {
                 avatar,
-                avatarCloudinaryPublicId,
+                avatarUploadcareFileId,
                 isGroupChat: true,
                 adminId: req.user.id,
                 name,
@@ -44,7 +44,7 @@ const createChat = asyncErrorHandler(async (req, res, next) => {
         const populatedChat = await prisma.chat.findUnique({
             where: { id: newChat.id },
             omit: {
-                avatarCloudinaryPublicId: true,
+                avatarUploadcareFileId: true,
             },
             include: {
                 ChatMembers: {
@@ -153,7 +153,7 @@ const getUserChats = asyncErrorHandler(async (req, res, next) => {
             }
         },
         omit: {
-            avatarCloudinaryPublicId: true,
+            avatarUploadcareFileId: true,
         },
         include: {
             ChatMembers: {
@@ -321,7 +321,7 @@ const addMemberToChat = asyncErrorHandler(async (req, res, next) => {
             id: chat.id
         },
         omit: {
-            avatarCloudinaryPublicId: true,
+            avatarUploadcareFileId: true,
         },
         include: {
             ChatMembers: {
@@ -483,20 +483,20 @@ const updateChat = asyncErrorHandler(async (req, res, next) => {
         return next(new CustomError("You cannot update a private chat", 400));
     }
     if (avatar) {
-        if (chat.avatarCloudinaryPublicId) {
-            // removing old group chat avatar from cloudinary (to free up cloud space)
-            await deleteFilesFromCloudinary({ publicIds: [chat.avatarCloudinaryPublicId] });
+        if (chat.avatarUploadcareFileId) {
+            // removing old group chat avatar from Uploadcare (to free up cloud space)
+            await deleteFilesFromUploadcare({ fileIds: [chat.avatarUploadcareFileId] });
         }
-        // now uploading the new group chat avatar to cloudinary
-        const uploadResult = await uploadFilesToCloudinary({ files: [avatar] });
+        // now uploading the new group chat avatar to Uploadcare
+        const uploadResult = await uploadFilesToUploadcare({ files: [avatar] });
         if (!uploadResult) {
             return next(new CustomError("Error updating chat avatar", 404));
         }
         await prisma.chat.update({
             where: { id },
             data: {
-                avatarCloudinaryPublicId: uploadResult[0].public_id,
-                avatar: uploadResult[0].secure_url
+                avatarUploadcareFileId: uploadResult[0].uuid,
+                avatar: uploadResult[0].cdnUrl
             }
         });
     }

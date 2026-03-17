@@ -1,66 +1,67 @@
-import { v2 as cloudinary } from 'cloudinary';
-import { convertBufferToBase64 } from './generic.js';
+import fs from 'fs';
+import { deleteFile } from '@uploadcare/rest-client';
+import { uploadClient, uploadcareAuthSchema } from '../config/uploadcare.config.js';
 
+export type UploadcareUploadResult = {
+    uuid: string;
+    cdnUrl: string;
+}
 
 const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
 
-// const cookieOptions:CookieOptions = {
-//     maxAge:thirtyDaysInMilliseconds,
-//     httpOnly:true,
-//     path:"/",
-//     priority:"high",
-//     secure:true,
-//     sameSite:env.NODE_ENV==='DEVELOPMENT'?"lax":"none",
-//     domain: env.NODE_ENV === 'DEVELOPMENT' ? 'localhost' : 'aesehi.online',
-//     partitioned:true,
-// }
-
-export const uploadFilesToCloudinary = async({files}:{files:Express.Multer.File[]})=>{
+export const uploadFilesToUploadcare = async({files}:{files:Express.Multer.File[]}): Promise<UploadcareUploadResult[] | undefined> =>{
     try {
-        const uploadPromises = files.map(file=>cloudinary.uploader.upload(file.path))
-        const result = await Promise.all(uploadPromises)
-        return result
+        const uploadPromises = files.map(async (file) => {
+            const fileBuffer = fs.readFileSync(file.path);
+            const result = await uploadClient.uploadFile(fileBuffer, {
+                fileName: file.originalname,
+                contentType: file.mimetype,
+            });
+            return { uuid: result.uuid, cdnUrl: result.cdnUrl };
+        });
+        const results = await Promise.all(uploadPromises);
+        return results;
     } catch (error) {
-        console.log('Error uploading files to cloudinary');
+        console.log('Error uploading files to Uploadcare');
         console.log(error);
     }
 }
 
-export const deleteFilesFromCloudinary = async({publicIds}:{publicIds:string[]}):Promise<any[] | undefined>=>{
+export const deleteFilesFromUploadcare = async({fileIds}:{fileIds:string[]}): Promise<void> =>{
     try {
-        await cloudinary.uploader.destroy(publicIds[0])
-        const deletePromises = publicIds.map(publicId=>cloudinary.uploader.destroy(publicId))
-        const uploadResult = await Promise.all(deletePromises)
-        return uploadResult
+        const deletePromises = fileIds.map(fileId =>
+            deleteFile({ uuid: fileId }, { authSchema: uploadcareAuthSchema })
+        );
+        await Promise.all(deletePromises);
     } catch (error) {
-        console.log('Error deleting files from cloudinary');
+        console.log('Error deleting files from Uploadcare');
         console.log(error);
     }
 }
 
-export const uploadEncryptedAudioToCloudinary = async ({buffer}: {buffer: Uint8Array<ArrayBuffer>}): Promise<any | undefined> => {
+export const uploadEncryptedAudioToUploadcare = async ({buffer}: {buffer: Uint8Array<ArrayBuffer>}): Promise<UploadcareUploadResult | undefined> => {
     try {
-      const base64Audio = `data:audio/webm;base64,${convertBufferToBase64(buffer)}`; // Adjust MIME type if needed
-      const uploadResult = await cloudinary.uploader.upload(base64Audio, {
-        resource_type: "raw", // "raw" for non-standard formats (or "video" for MP4)
-        folder: "encrypted-audio",
+      const nodeBuffer = Buffer.from(buffer);
+      const result = await uploadClient.uploadFile(nodeBuffer, {
+        fileName: 'encrypted-audio.webm',
+        contentType: 'audio/webm',
       });
-      return uploadResult;
+      return { uuid: result.uuid, cdnUrl: result.cdnUrl };
     } catch (error) {
-      console.error("Error uploading encrypted audio to Cloudinary:", error);
+      console.error("Error uploading encrypted audio to Uploadcare:", error);
     }
 };
 
-export const uploadAudioToCloudinary = async ({buffer}: {buffer: Uint8Array<ArrayBuffer>}): Promise<any | undefined> => {
+export const uploadAudioToUploadcare = async ({buffer}: {buffer: Uint8Array<ArrayBuffer>}): Promise<UploadcareUploadResult | undefined> => {
     try {
-      const base64Audio = `data:audio/webm;base64,${convertBufferToBase64(buffer)}`; // Adjust MIME type if needed
-      const uploadResult = await cloudinary.uploader.upload(base64Audio, {
-        resource_type: "raw", // "raw" for non-standard formats (or "video" for MP4)
-        folder: "group-audio",
+      const nodeBuffer = Buffer.from(buffer);
+      const result = await uploadClient.uploadFile(nodeBuffer, {
+        fileName: 'group-audio.webm',
+        contentType: 'audio/webm',
       });
-      return uploadResult;
+      return { uuid: result.uuid, cdnUrl: result.cdnUrl };
     } catch (error) {
-      console.error("Error uploading audio to Cloudinary:", error);
+      console.error("Error uploading audio to Uploadcare:", error);
     }
 };
 

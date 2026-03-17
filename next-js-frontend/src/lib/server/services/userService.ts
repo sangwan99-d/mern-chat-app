@@ -83,7 +83,7 @@ const fetchUserChats = async ({loggedInUserId}:{loggedInUserId:string}) => {
           }
         },
         omit:{
-          avatarCloudinaryPublicId:true,
+          avatarUploadcareFileId:true,
         },
         include:{
           ChatMembers:{
@@ -340,7 +340,7 @@ type FetchUserInfoResponse = Prisma.UserGetPayload<{
 
 type fetchUserChatsResponse = Prisma.ChatGetPayload<{
   omit:{
-    avatarCloudinaryPublicId:true,
+    avatarUploadcareFileId:true,
   },
   include:{
     ChatMembers:{

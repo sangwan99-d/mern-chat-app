@@ -189,7 +189,7 @@ export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
             }
           },
           omit:{
-            avatarCloudinaryPublicId:true,
+            avatarUploadcareFileId:true,
           },
           include:{
             ChatMembers:{

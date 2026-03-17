@@ -1,10 +1,9 @@
 import { Prisma } from "@prisma/client";
-import { UploadApiResponse } from "cloudinary";
 import { Server, Socket } from "socket.io";
 import { Events } from "../enums/event/event.enum.js";
 import { userSocketIds } from "../index.js";
 import { prisma } from "../lib/prisma.lib.js";
-import { deleteFilesFromCloudinary, uploadAudioToCloudinary, uploadEncryptedAudioToCloudinary } from "../utils/auth.util.js";
+import { deleteFilesFromUploadcare, uploadAudioToUploadcare, uploadEncryptedAudioToUploadcare, type UploadcareUploadResult } from "../utils/auth.util.js";
 import { sendPushNotification } from "../utils/generic.js";
 import registerWebRtcHandlers from "./webrtc/socket.js";
 
@@ -218,7 +217,7 @@ const registerSocketHandlers = (io:Server)=>{
             let newMessage:Partial<Prisma.MessageCreateInput>
 
             if(audio){
-                const uploadResult =  await uploadAudioToCloudinary({buffer:audio}) as UploadApiResponse | undefined;
+                const uploadResult = await uploadAudioToUploadcare({buffer:audio});
                 if(!uploadResult) return;
                 newMessage = await prisma.message.create({
                     data:{
@@ -226,15 +225,15 @@ const registerSocketHandlers = (io:Server)=>{
                         chatId:chatId,
                         isTextMessage:false,
                         isPollMessage:false,
-                        audioPublicId:uploadResult.public_id,
-                        audioUrl:uploadResult.secure_url,
+                        audioPublicId:uploadResult.uuid,
+                        audioUrl:uploadResult.cdnUrl,
                         replyToMessageId
                     },
                 })
             }
 
             else if(encryptedAudio){
-                const uploadResult = ( await uploadEncryptedAudioToCloudinary({buffer:encryptedAudio})) as UploadApiResponse | undefined;
+                const uploadResult = await uploadEncryptedAudioToUploadcare({buffer:encryptedAudio});
                 if(!uploadResult) return;
                 
                 newMessage = await prisma.message.create({
@@ -243,8 +242,8 @@ const registerSocketHandlers = (io:Server)=>{
                         chatId:chatId,
                         isTextMessage:false,
                         isPollMessage:false,
-                        audioPublicId:uploadResult.public_id,
-                        audioUrl:uploadResult.secure_url,
+                        audioPublicId:uploadResult.uuid,
+                        audioUrl:uploadResult.cdnUrl,
                         replyToMessageId
                     },
                 })
@@ -555,27 +554,27 @@ const registerSocketHandlers = (io:Server)=>{
     
                 const messageToBeDeleted =  await prisma.message.findUnique({
                     where:{chatId,id:messageId},
-                    select:{audioPublicId:true,attachments:{select:{cloudinaryPublicId:true}}}});
+                    select:{audioPublicId:true,attachments:{select:{uploadcareFileId:true}}}});
     
                 if(!messageToBeDeleted) return;
     
                 let publicIds:string[] = [];
     
-                // Delete files from Cloudinary first
+                // Delete files from Uploadcare first
                 if (messageToBeDeleted?.attachments.length) {
-                    console.log('deleting attachments from Cloudinary');
-                    const cloudinaryPublicIdsOfAttachments =  messageToBeDeleted?.attachments.map(({ cloudinaryPublicId }) => cloudinaryPublicId);
-                    publicIds.push(...cloudinaryPublicIdsOfAttachments);
+                    console.log('deleting attachments from Uploadcare');
+                    const uploadcareFileIdsOfAttachments =  messageToBeDeleted?.attachments.map(({ uploadcareFileId }) => uploadcareFileId);
+                    publicIds.push(...uploadcareFileIdsOfAttachments);
                     await prisma.attachment.deleteMany({ where: { messageId } });
                 }
     
                 if(messageToBeDeleted?.audioPublicId){
-                    console.log('deleting audio from Cloudinary');
+                    console.log('deleting audio from Uploadcare');
                     publicIds.push(messageToBeDeleted.audioPublicId);
                 }
                 
                 if(publicIds.length){
-                    await deleteFilesFromCloudinary({publicIds});
+                    await deleteFilesFromUploadcare({fileIds:publicIds});
                 }
     
                 // Now safely delete the original message

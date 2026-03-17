@@ -1,7 +1,7 @@
 import { ACCEPTED_FILE_MIME_TYPES } from "../constants/file.constant.js";
 import { Events } from "../enums/event/event.enum.js";
 import { prisma } from "../lib/prisma.lib.js";
-import { uploadFilesToCloudinary } from "../utils/auth.util.js";
+import { uploadFilesToUploadcare } from "../utils/auth.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
 import { calculateSkip } from "../utils/generic.js";
 import { emitEventToRoom } from "../utils/socket.util.js";
@@ -34,19 +34,19 @@ export const uploadAttachment = asyncErrorHandler(async (req, res, next) => {
         const invalidFileNames = invalidFiles.map(file => file.originalname).join(', ');
         return next(new CustomError(`Unsupported file types: ${invalidFileNames}, please provide valid files`, 400));
     }
-    const uploadResults = await uploadFilesToCloudinary({ files: attachments });
-    console.log("Cloudinary Upload Results:", uploadResults);
+    const uploadResults = await uploadFilesToUploadcare({ files: attachments });
+    console.log("Uploadcare Upload Results:", uploadResults);
     if (!uploadResults) {
         return next(new CustomError("Failed to upload files", 500));
     }
-    const attachmentsArray = uploadResults.map(({ secure_url, public_id }) => ({ cloudinaryPublicId: public_id, secureUrl: secure_url }));
+    const attachmentsArray = uploadResults.map(({ cdnUrl, uuid }) => ({ uploadcareFileId: uuid, secureUrl: cdnUrl }));
     const newMessage = await prisma.message.create({
         data: {
             chatId: chatId,
             senderId: req.user.id,
             attachments: {
                 createMany: {
-                    data: attachmentsArray.map(attachment => ({ cloudinaryPublicId: attachment.cloudinaryPublicId, secureUrl: attachment.secureUrl }))
+                    data: attachmentsArray.map(attachment => ({ uploadcareFileId: attachment.uploadcareFileId, secureUrl: attachment.secureUrl }))
                 }
             }
         },
@@ -135,7 +135,7 @@ export const fetchAttachments = asyncErrorHandler(async (req, res, next) => {
         },
         omit: {
             id: true,
-            cloudinaryPublicId: true,
+            uploadcareFileId: true,
             messageId: true,
         },
         orderBy: {
