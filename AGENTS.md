@@ -10,7 +10,7 @@
 - **`JWT_SECRET`** is only used for the Google OAuth flow, not regular auth.
 - **Firebase admin creds**: `backend/src/firebase-admin-cred.json` is gitignored. A placeholder file (with a dummy RSA key) is created at both `backend/src/` and `backend/build/` so the backend boots. Replace with real Firebase service account JSON for push notifications.
 - **Prisma schema location (backend)**: The schema is at `backend/src/prisma/schema.prisma` (not the default `prisma/schema.prisma`). The `prisma.schema` field in `backend/package.json` points Prisma to it.
-- **`assert { type: "json" }`**: The backend's `firebase.config.ts` uses the deprecated `assert` import attribute syntax. Must use Node 20 (not Node 22, which removed it).
+- **Firebase admin JSON import**: `backend/src/config/firebase.config.ts` imports the cred file with `with { type: "json" }` import attributes (requires Node ≥ 20.10).
 
 ## Environment
 - `.env.base44-defaults` (repo root) holds placeholder values for all env vars so the app boots without real credentials.
