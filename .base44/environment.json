@@ -1,0 +1,103 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "secrets": [
+    {
+      "name": "CLOUDINARY_CLOUD_NAME",
+      "description": "Cloudinary cloud name for file/image storage (Cloudinary dashboard)",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "CLOUDINARY_API_KEY",
+      "description": "Cloudinary API key (Cloudinary dashboard)",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "CLOUDINARY_API_SECRET",
+      "description": "Cloudinary API secret (Cloudinary dashboard)",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "GOOGLE_CLIENT_ID",
+      "description": "Google OAuth client ID (Google Cloud Console > APIs & Services > Credentials)",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "GOOGLE_CLIENT_SECRET",
+      "description": "Google OAuth client secret (Google Cloud Console > APIs & Services > Credentials)",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "EMAIL",
+      "description": "Email address for Nodemailer (e.g. Gmail address)",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "PASSWORD",
+      "description": "Email app password for Nodemailer (e.g. Gmail app password)",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "NEXT_PUBLIC_TENOR_API_KEY",
+      "description": "Tenor GIF API key (Google Cloud Console > Tenor API)",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "NEXT_PUBLIC_FIREBASE_API_KEY",
+      "description": "Firebase web API key (Firebase Console > Project Settings)",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN",
+      "description": "Firebase auth domain (Firebase Console > Project Settings)",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+      "description": "Firebase project ID (Firebase Console > Project Settings)",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET",
+      "description": "Firebase storage bucket (Firebase Console > Project Settings)",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
+      "description": "Firebase messaging sender ID (Firebase Console > Project Settings > Cloud Messaging)",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "NEXT_PUBLIC_FIREBASE_APP_ID",
+      "description": "Firebase app ID (Firebase Console > Project Settings)",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID",
+      "description": "Firebase measurement ID (Firebase Console > Project Settings > Analytics)",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "NEXT_PUBLIC_FIREBASE_VAPID_KEY",
+      "description": "Firebase VAPID key for push notifications (Firebase Console > Project Settings > Cloud Messaging)",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    }
+  ]
+}

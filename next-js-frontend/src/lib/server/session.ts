@@ -18,6 +18,7 @@ export async function createSession(userId: string) {
   (await cookies()).set("token", session, {
     httpOnly: true,
     secure: true,
+    sameSite: "none",
     expires: expiresAt,
   });
 }

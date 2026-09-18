@@ -1,6 +1,6 @@
 import { env } from "../schemas/env.schema.js";
 const developmentConfig = {
-    clientUrl: "http://localhost:3000",
+    clientUrl: process.env.CLIENT_URL || "http://localhost:3000",
     callbackUrl: `http://localhost:${env.PORT}/api/v1/auth/google/callback`,
 };
 const productionConfig = {
